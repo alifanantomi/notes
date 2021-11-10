@@ -4,6 +4,12 @@ export default {
         notes: JSON.parse(localStorage.getItem('notes')) || []
     },
 
+    getters: {
+        getNoteById: (state) => (id) => {
+          return state.notes.find(note => note.id === id)
+        }
+    },
+
     mutations: {
         SET_NOTES(state, notes) {
             var list_state = state.notes

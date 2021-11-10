@@ -11,7 +11,7 @@
 
         <div class="list-item" v-if="!isBusy">
 
-            <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.title)">
+            <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.id)">
                 <div class="description">
                     <div class="title"> {{ note.title }} </div>
                     <div class="desc">{{ note.content[0].content | substractString }}</div>
@@ -45,14 +45,15 @@ export default {
         return {
             isBusy: false,
 
-            notes: []
+            notes: [],
+            last_id: 0,
         }
     },
 
     filters: {
         substractString(str) {
 
-            return str.substring(0,39) + (str.trim().length > 38 ? ".." : '')
+            return str.trim().length > 33 ? str.substring(0,33) + '..' : str
         },
         dateFormatter(date) {
             date = new Date()
@@ -73,16 +74,24 @@ export default {
 
     mounted() {
         this.fetchNotes()
+
+        this.last_id = this.notesState.length
     },
 
     methods: {
-        onClickItem(title) {
-            var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+        // onClickItem(title) {
+        //     var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
 
-            this.$router.push('/' + slug)
+        //     this.$router.push('/' + slug)
+        // },
+        onClickItem(index) {
+
+            this.$router.push('/' + index)
         },
         onAddNotes() {
-            this.$router.push('/new')
+            var id = this.last_id + 1
+
+            this.$router.push('/' + id )
         },
 
         fetchNotes() {
