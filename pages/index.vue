@@ -11,7 +11,7 @@
 
         <div class="list-item" v-if="!isBusy">
 
-            <div class="item" v-for="(note, index) in notes" :key="index" @click="onClickItem(note.title)">
+            <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.title)">
                 <div class="description">
                     <div class="title"> {{ note.title }} </div>
                     <div class="desc">{{ note.content[0].content | substractString }}</div>
@@ -64,7 +64,11 @@ export default {
     computed: {
         ...mapState({
             notesState: (state) => state.Notes.notes,
-        })
+        }),
+
+        sorted_notes() {
+            return this.notes.sort((a, b) => b.timestamp - a.timestamp)
+        }
     },
 
     mounted() {

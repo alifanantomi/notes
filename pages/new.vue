@@ -53,6 +53,8 @@
 export default {
     data() {
         return {
+            isEditing: false,
+
             note: {
                 title: '',
                 slug: '',
@@ -66,6 +68,7 @@ export default {
             }
         }
     },
+
     methods: {
         onSave() {
             if (this.note.title.trim().length == 0) this.note.title = 'untitled'
@@ -73,6 +76,8 @@ export default {
             this.note.slug = this.note.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
 
             this.$store.dispatch('Notes/setNotes', this.note)
+
+            this.$router.push('/')
         },
         
         goBack() {
