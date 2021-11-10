@@ -54,6 +54,14 @@ export default {
       lang: 'en'
     }
   },
+  pwa: {
+    manifest: {
+      lang: 'en',
+      name: 'Notes ✏',
+      nativeUI: true,
+      useWebmanifestExtension: false
+    }
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
