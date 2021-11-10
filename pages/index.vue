@@ -9,17 +9,23 @@
             </div>
         </div>
 
-        <div class="list-item">
-            <div class="item" v-for="n in 10" :key="n" @click="onClickItem(n)">
+        <div class="list-item" v-if="!isBusy">
+
+            <div class="item" v-for="(note, index) in notes" :key="index" @click="onClickItem(note.title)">
                 <div class="description">
-                    <div class="title">Notes</div>
-                    <div class="desc">Came across this beautiful wall while w..</div>
-                    <div class="timestamp">08:15 PM</div>
+                    <div class="title"> {{ note.title }} </div>
+                    <div class="desc">{{ note.content[0].content | substractString }}</div>
+                    <div class="timestamp">{{ note.timestamp | dateFormatter }}</div>
                 </div>
                 <div class="assets">
                     <img src="" alt="">
                 </div>
             </div>
+
+        </div>
+        
+        <div class="list-item" v-else>
+            Loading
         </div>
 
         <div class="footer">
@@ -31,15 +37,59 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
     layout: "default",
+    data() {
+        return {
+            isBusy: false,
+
+            notes: []
+        }
+    },
+
+    filters: {
+        substractString(str) {
+
+            return str.substring(0,39) + (str.trim().length > 38 ? ".." : '')
+        },
+        dateFormatter(date) {
+            date = new Date()
+
+            return date.toDateString()
+        }
+    },
+
+    computed: {
+        ...mapState({
+            notesState: (state) => state.Notes.notes,
+        })
+    },
+
+    mounted() {
+        this.fetchNotes()
+    },
+
     methods: {
-        onClickItem(id) {
-            this.$router.push('/' + id)
+        onClickItem(title) {
+            var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+
+            this.$router.push('/' + slug)
         },
         onAddNotes() {
             this.$router.push('/new')
+        },
+
+        fetchNotes() {
+            this.isBusy = true
+
+            setTimeout(() => {
+                this.notes = this.notesState
+
+                this.isBusy = false
+            }, 400);
         }
-    }
+    },
 }
 </script>

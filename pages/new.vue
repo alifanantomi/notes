@@ -4,7 +4,7 @@
             <div class="back" @click="goBack">
                 <i class="ri-arrow-left-line"></i>
             </div>
-            <div class="share">
+            <div class="share" @click="onSave">
                 <!-- <i class="ri-share-forward-box-line"></i> -->
                 <span>Save</span>
             </div>
@@ -12,11 +12,18 @@
 
         <div class="text-editor">
             <h1 class="title">
-                <input class="form-title" type="text" placeholder="Title" v-model="text.title">
+                <input class="form-title" type="text" placeholder="Title" v-model="note.title">
             </h1>
 
-            <div class="content">
-                <textarea class="form-text" placeholder="Start typing.." autofocus wrap @keydown="onUpdate"></textarea>
+            <div class="content" v-for="(content, i) in note.content" :key="i">
+                <textarea 
+                    v-if="content.tag == 'p'" 
+                    class="form-text" 
+                    placeholder="Start typing.." 
+                    autofocus 
+                    wrap 
+                    v-model="content.content">
+                </textarea>
             </div>
         </div>
         
@@ -46,15 +53,26 @@
 export default {
     data() {
         return {
-            text: {
+            note: {
                 title: '',
-                content: {}
+                slug: '',
+                content: [
+                    {
+                        tag: 'p',
+                        content: ''
+                    }
+                ],
+                timestamp: Date.now()
             }
         }
     },
     methods: {
         onSave() {
+            if (this.note.title.trim().length == 0) this.note.title = 'untitled'
 
+            this.note.slug = this.note.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+
+            this.$store.dispatch('Notes/setNotes', this.note)
         },
         
         goBack() {
