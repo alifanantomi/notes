@@ -16,7 +16,7 @@
             </h1>
 
             <div class="content" v-for="(content, i) in note.content" :key="i">
-                <!-- <img src="@/assets/images/profile.jpg" alt=""> -->
+                <img v-if="content.tag == 'img'" :src="`@/assets/images/${content.content}`" alt="">
 
                 <textarea 
                     v-if="content.tag == 'p'" 
@@ -27,7 +27,7 @@
                     v-model="content.content">
                 </textarea>
                 
-                <!-- <div class="checklists">
+                <div v-if="content.tag == 'checklist'" class="checklist">
                     <div class="item" v-for="n in 3" :key="n">
                         <div class="icon">
                             <i class="ri-checkbox-circle-fill" v-if="n > 1"></i>
@@ -35,7 +35,7 @@
                         </div>
                         <span class="checklist-title">Try black and white version {{ n }}</span>
                     </div>
-                </div> -->
+                </div>
 
             </div>
         </div>
@@ -95,7 +95,7 @@ export default {
     },
 
     mounted() {
-        // this.fetchDetailNote(this.id_note)
+        this.fetchDetailNote(this.id_note)
     },
 
     methods: {

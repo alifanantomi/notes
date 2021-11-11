@@ -4,12 +4,16 @@
             <div class="title">
                 <i class="ri-sticky-note-line"></i>
             </div>
-            <div class="profile">
+            <!-- <div class="profile">
                 <img src="@/assets/images/profile.jpg" alt="">
-            </div>
+            </div> -->
         </div>
 
-        <div class="list-item" v-if="!isBusy">
+        <div class="list-item" v-if="isBusy">
+            <div class="text-center">Loading</div>
+        </div>
+
+        <div class="list-item" v-else-if="notes.length > 0">
 
             <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.id)">
                 <div class="description">
@@ -23,9 +27,9 @@
             </div>
 
         </div>
-        
+
         <div class="list-item" v-else>
-            Loading
+            <div class="text-center">No Notes</div>
         </div>
 
         <div class="footer">
