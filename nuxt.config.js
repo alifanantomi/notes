@@ -15,7 +15,7 @@ export default {
     ]
   },
 
-  ssr: false,
+  ssr: true,
 
   server: {     
     port: 7000, // default: 3000     
