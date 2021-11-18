@@ -10,33 +10,38 @@
             </div>
         </div>
 
-        <div class="text-editor">
+        <div class="text-editor" v-if="isBusy">
+            <div class="text-center">Loading</div>
+        </div>
+
+        <div class="text-editor" v-else>
             <h1 class="title">
                 <input class="form-title" type="text" placeholder="Title" v-model="note.title">
             </h1>
 
-            <div class="content" v-for="(content, i) in note.content" :key="i">
-                <img v-if="content.tag == 'img'" :src="`@/assets/images/${content.content}`" alt="">
+            <div class="content" >
+                <div v-for="(content, i) in note.content" :key="i">
+                    <!-- <img v-if="content.tag == 'image'" :src='"@/assets/images/profile.jpg"' alt=""> -->
 
-                <textarea 
-                    v-if="content.tag == 'p'" 
-                    class="form-text" 
-                    placeholder="Start typing.." 
-                    autofocus 
-                    wrap 
-                    v-model="content.content">
-                </textarea>
-                
-                <div v-if="content.tag == 'checklist'" class="checklist">
-                    <div class="item" v-for="n in 3" :key="n">
-                        <div class="icon">
-                            <i class="ri-checkbox-circle-fill" v-if="n > 1"></i>
-                            <i class="ri-checkbox-blank-circle-line" v-else></i>
+                    <textarea 
+                        v-if="content.tag == 'paragraph'" 
+                        class="form-text" 
+                        placeholder="Start typing.." 
+                        autofocus 
+                        wrap 
+                        v-model="content.content">
+                    </textarea>
+                    
+                    <div v-if="content.tag == 'checklist'" class="checklist">
+                        <div class="item" v-for="n in 3" :key="n">
+                            <div class="icon">
+                                <i class="ri-checkbox-circle-fill" v-if="n > 1"></i>
+                                <i class="ri-checkbox-blank-circle-line" v-else></i>
+                            </div>
+                            <span class="checklist-title">Try black and white version {{ n }}</span>
                         </div>
-                        <span class="checklist-title">Try black and white version {{ n }}</span>
                     </div>
                 </div>
-
             </div>
         </div>
         
@@ -63,7 +68,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
     data() {
@@ -89,12 +94,12 @@ export default {
     },
 
     computed: {
-        ...mapGetters({
-            getNoteById: 'Notes/getNoteById'
-        })
+        ...mapState({
+            notesState: (state) => state.Notes.notes
+        }),
     },
 
-    mounted() {
+    mounted() { 
         this.fetchDetailNote(this.id_note)
     },
 
@@ -111,16 +116,18 @@ export default {
             this.$router.push('/')
         },
 
-        fetchDetailNote(index) {
+        async fetchDetailNote() {
             this.isBusy = true
 
-            setTimeout(() => {
-                this.note = this.getNoteById(index)
+            try {
+                await this.$store.dispatch('Notes/fetchNotesById', this.id_note)
 
-                this.note.content[0].content.trim().length > 0 ? this.isEditing = true : this.isEditing = false
+                this.note = this.notesState
+            } catch (error) {
+                console.error('failed fetch detail note', error)
+            }
 
-                this.isBusy = false
-            }, 400);
+            this.isBusy = false
         },
         
         goBack() {

@@ -13,12 +13,16 @@
             <div class="text-center">Loading</div>
         </div>
 
-        <div class="list-item" v-else-if="notes.length > 0">
+        <div class="list-item" v-else-if="!isBusy && notes.length == 0">
+            <div class="text-center">Empty Notes</div>
+        </div>
 
-            <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.id)">
+        <div class="list-item" v-else>
+
+            <div class="item" v-for="(note, index) in sorted_notes" :key="index" @click="onClickItem(note.id_note)">
                 <div class="description">
                     <div class="title"> {{ note.title }} </div>
-                    <div class="desc">{{ note.content[0].content | substractString }}</div>
+                    <div class="desc">{{ note.content }}</div>
                     <div class="timestamp">{{ note.timestamp | dateFormatter }}</div>
                 </div>
                 <div class="assets">
@@ -26,10 +30,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="list-item" v-else>
-            <div class="text-center">No Notes</div>
         </div>
 
         <div class="footer">
@@ -63,12 +63,12 @@ export default {
             date = new Date()
 
             return date.toDateString()
-        }
+        },
     },
 
     computed: {
         ...mapState({
-            notesState: (state) => state.Notes.notes,
+            notesState: (state) => state.Notes.notes
         }),
 
         sorted_notes() {
@@ -78,19 +78,12 @@ export default {
 
     mounted() {
         this.fetchNotes()
-
-        this.last_id = this.notesState.length
     },
 
     methods: {
-        // onClickItem(title) {
-        //     var slug = title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+        onClickItem(id) {
 
-        //     this.$router.push('/' + slug)
-        // },
-        onClickItem(index) {
-
-            this.$router.push('/' + index)
+            this.$router.push('/' + id)
         },
         onAddNotes() {
             var id = this.last_id + 1
@@ -98,15 +91,22 @@ export default {
             this.$router.push('/' + id )
         },
 
-        fetchNotes() {
+        async fetchNotes() {
             this.isBusy = true
 
-            setTimeout(() => {
+            try {
+                await this.$store.dispatch('Notes/fetchNotes')
+
                 this.notes = this.notesState
 
-                this.isBusy = false
-            }, 400);
-        }
+            } catch (error) {
+                console.error('failed fetch notes list', error)
+            }
+
+            this.last_id = this.notes.length
+
+            this.isBusy = false
+        },
     },
 }
 </script>
